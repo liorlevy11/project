@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -11,11 +11,10 @@ function HomePage({ onLogout }) {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
 
-
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:3001/logout", { email });
-      onLogout(); 
+      onLogout();
       navigate("/login");
     } catch (error) {
       console.error("Error logging out:", error);
@@ -27,20 +26,23 @@ function HomePage({ onLogout }) {
   };
 
   const handleRunModel = async () => {
-    if (file) {
+    if (file && email) {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('email', email); // Include the email in the form data
 
       try {
-        const response = await axios.post('http://localhost:3001/run-model', formData, {
+        const response = await axios.post('http://localhost:3001/upLoadFile', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-        setResult(response.data); // Assuming the response contains the result
+        setResult(response.data.message); // Assuming the response contains a message
       } catch (error) {
-        console.error('Error running model:', error);
+        console.error('Error uploading file:', error);
       }
+    } else {
+      alert("Please select a file to upload ");
     }
   };
 
@@ -72,8 +74,8 @@ function HomePage({ onLogout }) {
   
           {result && (
             <div className="result-container">
-              <h2>The Result</h2>
-              <p>{result}</p>
+              <h2>Upload Result</h2>
+              <pre style={{ whiteSpace: 'pre-wrap' }}>{result}</pre>
             </div>
           )}
         </div>
@@ -89,7 +91,6 @@ function HomePage({ onLogout }) {
       </div>
     </div>
   );
-  }
-  
+}
 
 export default HomePage;

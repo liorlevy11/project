@@ -15,13 +15,14 @@ Make sure you have the following software installed on your machine:
 - npm (Node Package Manager)
 
 
+
 ### Installation
 
 1. Clone the repository
 
 2. Navigate to the server directory:cd server
 
-3. Install the server dependencies: npm install
+3. Install the server dependencies: npm install & npm install multer
 
 4. Start the server:node server.js
 
