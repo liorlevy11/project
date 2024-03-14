@@ -4,10 +4,20 @@ const userController = require("./userControler")
 const filesController = require("./filesControler")
 
 
-async function upLoadFile(email,file) {
-  if( !userController.isLogin(email)){ throw new Error("have to be logged in first");}
-  return filesController.upLoadFile(email,file);
+async function upLoadFile(email, file) {
+  if (!userController.isLogin(email)) {
+    throw new Error("Have to be logged in first");
+  }
+  
+  // Return a Promise that resolves with the result of upload
+  return new Promise((resolve, reject) => {
+    filesController.upLoadFile(email, file, (result) => {
+      //console.log(result)
+      resolve(result);
+    });
+  });
 }
+
 
 
 async function register(email, password, name){
