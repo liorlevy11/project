@@ -55,8 +55,9 @@ app.post("/upLoadFile", upload.single('file'), async (req, res) => {
 
   try {
     // Process the file and email, possibly saving the file and associating it with the user's email
-    let result =await service.upLoadFile(email, file.path);
-    res.status(200).json({ message: result });
+    let result = await service.upLoadFile(email, file.path);
+    //console.log(result)
+    res.status(200).json({ message: result});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
