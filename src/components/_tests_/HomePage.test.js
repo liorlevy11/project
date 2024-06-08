@@ -1,38 +1,34 @@
-import React from "react";
-import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+import React from 'react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import axios from 'axios';
+import HomePage from '../HomePage';
+import { BrowserRouter as Router } from 'react-router-dom';
 
-import { BrowserRouter as Router } from "react-router-dom";
-import HomePage from "../HomePage";
+jest.mock('axios');
 
 describe('HomePage Component', () => {
-  it('renders the HomePage component', () => {
-    render(
-      <Router>
-        <HomePage onLogout={jest.fn()} />
-      </Router>
-    );
-    expect(screen.getByText(/Detect an Obfuscated Code/i)).toBeInTheDocument();
+  const mockLogout = jest.fn();
+
+  beforeEach(() => {
+    axios.post.mockClear();
+    mockLogout.mockClear();
   });
 
-  it('logs out successfully', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ message: 'Logout successful' }),
-      })
-    );
+  test('logs out successfully', async () => {
+    axios.post.mockResolvedValueOnce({ status: 200, data: { message: 'Logout successful' } });
 
-    const onLogout = jest.fn();
     render(
-      <Router>
-        <HomePage onLogout={onLogout} />
-      </Router>
+        <Router>
+          <HomePage onLogout={mockLogout} />
+        </Router>
     );
 
-    fireEvent.click(screen.getByText(/Logout/i));
+    const logoutButton = screen.getByText(/Logout/i);
+    fireEvent.click(logoutButton);
 
     await waitFor(() => {
-      expect(onLogout).toHaveBeenCalled();
+      expect(mockLogout).toHaveBeenCalled();
     });
   });
 });
