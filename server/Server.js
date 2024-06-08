@@ -1,12 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-const service = require("../service/Service")
+const service = require("../service/Service");
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Configure multer to store files in 'uploads/' directory
 
 const app = express();
 const port = 3001;
-
 
 // Middleware to parse JSON body
 app.use(express.json());
@@ -17,12 +16,11 @@ app.use(cors());
 // Route for user registration
 app.post("/register", async (req, res) => {
   const { email, password, name } = req.body;
-  try{
-  await service.register(email, password, name);
-  res.status(200).json({ message: "User registered successfully" });
-}
-  catch (error) {
-    res.status(401).json({ message:error.message});
+  try {
+    await service.register(email, password, name);
+    res.status(200).json({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(401).json({ message: error.message });
   }
 });
 
@@ -30,22 +28,19 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  // Check if the email and password match the registered user
-  try{
+  try {
     await service.login(email, password);
     res.status(200).json({ message: "Login successful" });
-  }
-  catch(error){
-    res.status(401).json({message:error.message});
+  } catch (error) {
+    res.status(401).json({ message: error.message });
   }
 });
-   
 
 // Route for logout
 app.post("/logout", async (req, res) => {
   const { email } = req.body;
-   await service.logout(email);
-  res.status(200).json({message: "Lgout successful"});
+  await service.logout(email);
+  res.status(200).json({ message: "Logout successful" });
 });
 
 // Route for upLoadFile
@@ -63,9 +58,11 @@ app.post("/upLoadFile", upload.single('file'), async (req, res) => {
   }
 });
 
-
-
 // Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+} else {
+  module.exports = app;
+}
