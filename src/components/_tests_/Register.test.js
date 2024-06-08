@@ -2,9 +2,17 @@ import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Register from '../Register';
-import '@testing-library/jest-dom';
 
 describe('Register Component', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ message: 'User registered successfully' }),
+        })
+    );
+  });
+
   test('renders Register component and submits form', async () => {
     render(<Register onFormSwitch={jest.fn()} />);
 
