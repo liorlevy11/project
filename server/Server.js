@@ -45,14 +45,15 @@ app.post("/logout", async (req, res) => {
 
 // Route for upLoadFile
 app.post("/upLoadFile", upload.single('file'), async (req, res) => {
+  console.log("Received file upload request:", req.body); // Added this line for debugging
   const email = req.body.email;
   const file = req.file; // The uploaded file's information
+  const model = req.body.model; // The selected model
 
   try {
-    // Process the file and email, possibly saving the file and associating it with the user's email
-    let result = await service.upLoadFile(email, file.path);
-    //console.log(result)
-    res.status(200).json({ message: result});
+    // Process the file, email, and selected model
+    let result = await service.upLoadFile(email, file.path, model);
+    res.status(200).json({ message: result });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
