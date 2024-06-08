@@ -24,5 +24,7 @@ my-jmeter-tests/
 └── README.md
 
 ## run the tests:
-On windows:
+user can run the Jmeter.bat file, inside the Jmeter app, and choose which test to run with the comfortable GUI of the app.
+
+Or: only on windows:
 	go to scripts directory on cmd and run the command: run_tests.bat
