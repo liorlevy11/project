@@ -4,7 +4,7 @@ const userController = require("./userControler")
 const filesController = require("./filesControler")
 
 
-async function upLoadFile(email, file) {
+async function upLoadFile(email, file, model="default") {
 
     if (!userController.isLogin(email)) {
         throw new Error("Have to be logged in first");
@@ -23,7 +23,7 @@ async function upLoadFile(email, file) {
 
     // Return a Promise that resolves or rejects based on the upload result
     return new Promise((resolve, reject) => {
-        filesController.upLoadFile(email, file, (result) => {
+        filesController.upLoadFile(email, file, model, (result) => {
             // Add checks for the result here
             if (result === null) {
                 reject(new Error("File upload returned null result"));
