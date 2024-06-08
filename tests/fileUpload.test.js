@@ -107,6 +107,41 @@ describe('Service - upLoadFile', () => {
       await expect(service.upLoadFile(testEmail, testFile)).rejects.toThrow('File upload exception');
       expect(filesController.upLoadFile).toHaveBeenCalledWith(testEmail, testFile, expect.any(Function));
     });
+  test('should handle choosing a file then choosing it again', async () => {
+    userController.isLogin.mockReturnValue(true);
+    const file = { name: 'testFile.txt' };
+    await expect(service.upLoadFile(testEmail, file)).resolves.toEqual('File uploaded successfully');
+    expect(filesController.upLoadFile).toHaveBeenCalledWith(testEmail, file, expect.any(Function));
+    await expect(service.upLoadFile(testEmail, file)).resolves.toEqual('File uploaded successfully');
+    expect(filesController.upLoadFile).toHaveBeenCalledWith(testEmail, file, expect.any(Function));
+  });
+  test('should handle choosing file then choosing another file', async () => {
+    userController.isLogin.mockReturnValue(true);
+    const file1 = { name: 'testFile1.txt' };
+    const file2 = { name: 'testFile2.txt' };
+    await expect(service.upLoadFile(testEmail, file1)).resolves.toEqual('File uploaded successfully');
+    expect(filesController.upLoadFile).toHaveBeenCalledWith(testEmail, file1, expect.any(Function));
+    await expect(service.upLoadFile(testEmail, file2)).resolves.toEqual('File uploaded successfully');
+    expect(filesController.upLoadFile).toHaveBeenCalledWith(testEmail, file2, expect.any(Function));
+  });
+  //test changing model option
+  test('should handle changing model option', async () => {
+    userController.isLogin.mockReturnValue(true);
+    const file = { name: 'testFile.txt' };
+    const model = 'model2';
+    await expect(service.upLoadFile(testEmail, file, model)).resolves.toEqual('File uploaded successfully');
+    expect(filesController.upLoadFile).toHaveBeenCalledWith(testEmail, file, model, expect.any(Function));
+  });
+  test('should handle changing model option then changing it again', async () => {
+    userController.isLogin.mockReturnValue(true);
+    const file = { name: 'testFile.txt' };
+    const model1 = 'model1';
+    const model2 = 'model2';
+    await expect(service.upLoadFile(testEmail, file, model1)).resolves.toEqual('File uploaded successfully');
+    expect(filesController.upLoadFile).toHaveBeenCalledWith(testEmail, file, model1, expect.any(Function));
+    await expect(service.upLoadFile(testEmail, file, model2)).resolves.toEqual('File uploaded successfully');
+    expect(filesController.upLoadFile).toHaveBeenCalledWith(testEmail, file, model2, expect.any(Function));
+  });
 
 
 });
