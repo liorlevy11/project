@@ -31,4 +31,42 @@ describe('HomePage Component', () => {
       expect(mockLogout).toHaveBeenCalled();
     });
   });
-});
+
+
+  // test('displays error message on logout failure', async () => {
+  //     axios.post.mockRejectedValueOnce(new Error('Network Error'));
+  //
+  //     render(
+  //         <Router>
+  //           <HomePage onLogout={mockLogout} />
+  //         </Router>
+  //     );
+  //
+  //     const logoutButton = screen.getByText(/Logout/i);
+  //     fireEvent.click(logoutButton);
+  //
+  //     await waitFor(() => {
+  //       expect(screen.getByText(/Error logging out/i)).toBeInTheDocument();
+  //     });
+  //   });
+
+    test('displays error message on file upload failure', async () => {
+      axios.post.mockRejectedValueOnce(new Error('Error uploading file'));
+
+      render(
+          <Router>
+            <HomePage onLogout={mockLogout} />
+          </Router>
+      );
+
+      const fileInput = screen.getByLabelText(/upload file/i);
+      fireEvent.change(fileInput, { target: { files: [new File(['file contents'], 'testfile.txt')] } });
+
+      const uploadButton = screen.getByText(/Run the ML Model with the given file/i);
+      fireEvent.click(uploadButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Error uploading file/i)).toBeInTheDocument();
+      });
+    });
+  });
