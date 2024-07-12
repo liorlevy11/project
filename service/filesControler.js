@@ -5,6 +5,7 @@ const cache = new NodeCache();
 
 
 function upLoadFile(email, file, model="default", callback) {
+  console.log('test2')
   // Modify the command to pass the selected model as an argument
   const python_process = spawn('python3', ['service/runModel.py', model]);
 

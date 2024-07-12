@@ -38,6 +38,7 @@ function HomePage({ onLogout }) {
       formData.append("model", model); // Include the selected model in the form data
 
       try {
+        console.log("1");
         const response = await axios.post(
           "http://localhost:3001/upLoadFile",
           formData,
@@ -47,7 +48,16 @@ function HomePage({ onLogout }) {
             },
           }
         );
+        console.log("2");
+        // Print the response message to the console
+      console.log(response.data.message);
+
+        if(response.data.message===null){
+          setResult("The file upload returned null result");
+        }
+        else{
         setResult(response.data.message);
+        }
       } catch (error) {
         console.error("Error uploading file:", error);
       }

@@ -5,24 +5,26 @@ const filesController = require("./filesControler")
 
 
 async function upLoadFile(email, file, model="default") {
+    console.log("3");
 
     if (!userController.isLogin(email)) {
         throw new Error("Have to be logged in first");
     }
-
+    console.log("3+");
     // Add validation for email format, file name, etc.
     if (!email || typeof email !== 'string' || !email.includes('@')) {
         throw new Error("Invalid email format");
     }
-    if (!file || !file.name) {
-        throw new Error("File must have a name");
+    console.log("3++");
+    if (!file ) {
+        throw new Error("File must be selected");
     }
-    if (file.name === '') {
-        throw new Error("File name cannot be empty");
-    }
+    
+    console.log("4");
 
     // Return a Promise that resolves or rejects based on the upload result
     return new Promise((resolve, reject) => {
+        console.log('1 ')
         filesController.upLoadFile(email, file, model, (result) => {
             // Add checks for the result here
             if (result === null) {
@@ -32,6 +34,7 @@ async function upLoadFile(email, file, model="default") {
             } else if (typeof result !== 'string') {
                 reject(new Error("File upload returned non-string result"));
             } else {
+                console.log("5");
                 resolve(result);
             }
         });
