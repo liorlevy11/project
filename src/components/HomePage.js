@@ -30,7 +30,7 @@ function HomePage({ onLogout }) {
     setModel(event.target.value);
   };
 
-  const handleRunModel = async (model = "default") => {
+  const handleRunModel = async () => {
     if (file && email) {
       const formData = new FormData();
       formData.append("file", file);

@@ -16,8 +16,8 @@ async function upLoadFile(email, file, model="default") {
         throw new Error("Invalid email format");
     }
     console.log("3++");
-    if (!file ) {
-        throw new Error("File must be selected");
+    if (!file) {
+        throw new Error("File must have a exist");
     }
     
     console.log("4");
