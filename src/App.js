@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import HomePage from "./components/HomePage";
+import MalCheck from "./components/MalCheck";
 import "./App.css";
 
 function App() {
@@ -14,9 +15,8 @@ function App() {
   };
 
   const handleLogout = () => {
-    // Clear any necessary state or perform other actions on successful logout
-    setCurrentForm("login"); // Switch to the login form
-    setEmail(""); // Clear the email state
+    setCurrentForm("login");
+    setEmail("");
   };
 
   const renderForm = () => {
@@ -25,7 +25,12 @@ function App() {
     } else if (currentForm === "register") {
       return <Register onFormSwitch={toggleForm} />;
     } else if (currentForm === "HomePage") {
-      return <HomePage email={email} onLogout={handleLogout} />;
+      return <HomePage email={email} onLogout={handleLogout} onFormSwitch={toggleForm} />;
+    } else if (currentForm === "MalCheck") {
+      return <MalCheck email={email} onLogout={handleLogout} onFormSwitch={toggleForm} />;
+    } else {
+      console.log("Invalid form name");
+      return <div>Invalid form name</div>;
     }
   };
 
@@ -33,4 +38,3 @@ function App() {
 }
 
 export default App;
-

@@ -51,6 +51,7 @@ const Register = (props) => {
 
       if (response.ok) {
         setRegistrationMessage(data.message);
+        props.onFormSwitch("login");
         // Save the registration data and proceed with login
       } else {
         setRegistrationMessage(data.message);

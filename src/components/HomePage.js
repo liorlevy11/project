@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function HomePage({ onLogout }) {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const email = searchParams.get("email");
+function HomePage({ email, onLogout, onFormSwitch }) {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
-  const [model, setModel] = useState("default"); // Initialize with default model
+  const [model, setModel] = useState("default");
   const [result, setResult] = useState(null);
 
   const handleLogout = async () => {
@@ -30,12 +26,12 @@ function HomePage({ onLogout }) {
     setModel(event.target.value);
   };
 
-  const handleRunModel = async (model = "default") => {
+  const handleRunModel = async () => {
     if (file && email) {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("email", email);
-      formData.append("model", model); // Include the selected model in the form data
+      formData.append("model", model);
 
       try {
         const response = await axios.post(
@@ -47,12 +43,17 @@ function HomePage({ onLogout }) {
             },
           }
         );
-        setResult(response.data.message);
+
+        if (response.data.message === null) {
+          setResult("The file upload returned null result");
+        } else {
+          setResult(response.data.message);
+        }
       } catch (error) {
         console.error("Error uploading file:", error);
       }
     } else {
-      alert("Please select a file to upload ");
+      alert("Please select a file to upload");
     }
   };
 
@@ -66,11 +67,7 @@ function HomePage({ onLogout }) {
         <div className="auth-form-container">
           <div className="file-upload-container">
             <h2>Upload file</h2>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="form-control"
-            />
+            <input type="file" onChange={handleFileChange} className="form-control" />
           </div>
 
           <div className="model-select-container">
@@ -80,15 +77,11 @@ function HomePage({ onLogout }) {
               <option value="model1">Model 1</option>
               <option value="model2">Model 2</option>
               <option value="model3">Model 3</option>
-              {/* Add more models as needed */}
             </select>
           </div>
 
           <div className="run-model-container">
-            <button
-              onClick={() => handleRunModel(model)}
-              className="btn btn-primary btn-block"
-            >
+            <button onClick={handleRunModel} className="btn btn-primary btn-block">
               Run the ML Model with the given file
             </button>
           </div>
@@ -102,11 +95,17 @@ function HomePage({ onLogout }) {
         </div>
 
         <footer className="footer-container">
+          <button onClick={handleLogout} className="btn btn-secondary btn-block">
+            Logout
+          </button>
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              navigate(`/MalCheck?email=${email}`);
+              onFormSwitch("MalCheck", email);
+            }}
             className="btn btn-secondary btn-block"
           >
-            Logout
+            Malicious Check
           </button>
         </footer>
       </div>

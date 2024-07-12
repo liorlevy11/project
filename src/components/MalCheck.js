@@ -29,7 +29,7 @@ function MalCheck({ email, onLogout, onFormSwitch }) {
 
       try {
         const response = await axios.post(
-          "http://localhost:3001/upLoadFileForMalwareDetect",
+          "http://localhost:3001/checkFile",
           formData,
           {
             headers: {
