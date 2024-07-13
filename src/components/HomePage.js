@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function HomePage({ onLogout }) {
+function HomePage({ email, onLogout, onFormSwitch }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const email = searchParams.get("email");
@@ -112,11 +112,17 @@ function HomePage({ onLogout }) {
         </div>
 
         <footer className="footer-container">
+          <button onClick={handleLogout} className="btn btn-secondary btn-block">
+            Logout
+          </button>
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              navigate(`/MalCheck?email=${email}`);
+              onFormSwitch("MalCheck", email);
+            }}
             className="btn btn-secondary btn-block"
           >
-            Logout
+            Malicious Check
           </button>
         </footer>
       </div>

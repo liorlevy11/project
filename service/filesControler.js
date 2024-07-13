@@ -28,9 +28,32 @@ function upLoadFile(email, file, model="default", callback) {
 
   console.log("end run model");
 }
+function upLoadFileForMalCheck(email, file, model="default", callback) {
+  // Modify the command to pass the selected model as an argument
+  const python_process = spawn('python3', ['service/detectMalware.py', model]);
+
+  console.log("run MalCheck");
+
+  let result = ''; // Accumulate the data
+
+  python_process.stdout.on('data', (data) => {
+    const newData = data.toString();
+
+    console.log("Mal data:", newData);
+
+    result += newData; // Accumulate the data
+  });
+
+  // When the process ends, call the callback with the accumulated data
+  python_process.on('close', (code) => {
+    callback(result);
+  });
+
+  console.log("end run Malcheck");
+}
 
 
 
 module.exports = {
-  upLoadFile,
+  upLoadFile,upLoadFileForMalCheck,
 };

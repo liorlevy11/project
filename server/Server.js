@@ -59,6 +59,21 @@ app.post("/upLoadFile", upload.single('file'), async (req, res) => {
   }
 });
 
+// Route for upLoadFileForMalCheck
+app.post("/upLoadFileForMalCheck", upload.single('file'), async (req, res) => {
+  console.log("Received file upload request:", req.body); // Added this line for debugging
+  const email = req.body.email;
+  const file = req.file; // The uploaded file's information
+
+  try {
+    // Process the file, email, and selected model
+    let result = await service.upLoadFileForMalCheck(email, file.path);
+    res.status(200).json({ message: result });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Start the server
 if (require.main === module) {
   app.listen(port, () => {
