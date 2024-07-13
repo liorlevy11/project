@@ -30,8 +30,6 @@ function MalCheck({ onLogout, onFormSwitch }) {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("email", email);
-      console.log("formData", formData.get("file"));
-      console.log("formData", formData.get("email"));
 
       try {
 

@@ -71,11 +71,8 @@ app.post("/upLoadFileForMalCheck", upload.single('file'), async (req, res) => {
   try {
     // Process the file, email, and selected model
     let result = await service.upLoadFileForMalCheck(email, file.path);
-    console.log("\n\n\n\n\n**********************************");
-    console.log("result", result);
     res.status(200).json({ message: result });
   } catch (error) {
-    console.log("error", error);
     res.status(500).json({ message: error.message });
   }
 });
