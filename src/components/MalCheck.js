@@ -35,17 +35,6 @@ function MalCheck({ onLogout, onFormSwitch }) {
 
       try {
 
-        /*const response = await axios.post(
-          "http://localhost:3001/upLoadFileForMalCheck",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              "withCredentials": true,
-              "Access-Control-Allow-Origin": "*"
-            },
-          }
-        );*/
         const response = await fetch("http://localhost:3001/upLoadFileForMalCheck", {
           method: "POST",
           /*headers: {
@@ -53,11 +42,12 @@ function MalCheck({ onLogout, onFormSwitch }) {
           },*/
           body: formData,
         });
-
+        const data = await response.json();
+        setResult(data.message);
         if (!response.ok) {
           setResult("The file upload returned null result");
         } else {
-          setResult(response.data);
+          setResult(data.message);
         }
       } catch (error) {
         console.error("Error uploading file:", error);

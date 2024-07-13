@@ -104,7 +104,7 @@ function HomePage({ onLogout, onFormSwitch }) {
           <div className="run-model-container">
             <button
               onClick={() => handleRunModel(model)}
-              className="btn btn-primary btn-block"
+              className="btn btn-primary btn-block" 
             >
               Run the ML Model with the given file
             </button>

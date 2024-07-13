@@ -4,7 +4,7 @@ const { spawn } = require('child_process');
 const cache = new NodeCache();
 
 function upLoadFile(email, file, model="default", callback) {
-  console.log('test2');
+  //console.log('test2');
   const python_process = spawn('python', ['../service/runModel.py', model]);
 
   console.log("run model");
@@ -37,7 +37,6 @@ function upLoadFileForMalCheck(email, file, callback) {
 
   python_process.stdout.on('data', (data) => {
     const newData = data.toString();
-    console.log("Mal data:", newData);
     result += newData; // Accumulate the data
   });
 
@@ -47,7 +46,6 @@ function upLoadFileForMalCheck(email, file, callback) {
 
   python_process.on('close', (code) => {
     callback(result);
-    console.log("\n#################################\nresult\n", result);
     return result;
   });
 
