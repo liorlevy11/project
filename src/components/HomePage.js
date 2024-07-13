@@ -3,12 +3,13 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function HomePage({ onLogout }) {
+function HomePage({ onLogout, onFormSwitch }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const email = searchParams.get("email");
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
+  const [model, setModel] = useState("default"); // Initialize with default model
   const [result, setResult] = useState(null);
 
   const handleLogout = async () => {
@@ -25,21 +26,47 @@ function HomePage({ onLogout }) {
     setFile(event.target.files[0]);
   };
 
+  const handleModelChange = (event) => {
+    setModel(event.target.value);
+  };
+
   const handleRunModel = async () => {
     if (file && email) {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('email', email); // Include the email in the form data
+      formData.append("file", file);
+      formData.append("email", email);
+      formData.append("model", model); // Include the selected model in the form data
 
       try {
-        const response = await axios.post('http://localhost:3001/upLoadFile', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+        console.log("1");
+        /*const response = await axios.post(
+          "http://localhost:3001/upLoadFile",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );*/
+        const response = await fetch("http://localhost:3001/upLoadFile", {
+          method: "POST",
+          /*headers: {
+            "Content-Type": "multipart/form-data",
+          },*/
+          body: formData,
         });
-        setResult(response.data.message); // Assuming the response contains a message
+        console.log("2");
+        // Print the response message to the console
+      console.log(response);
+
+        if(!response.ok){
+          setResult("The file upload returned null result");
+        }
+        else{
+        setResult(response.data);
+        }
       } catch (error) {
-        console.error('Error uploading file:', error);
+        console.error("Error uploading file:", error);
       }
     } else {
       alert("Please select a file to upload ");
@@ -52,7 +79,7 @@ function HomePage({ onLogout }) {
         <header className="header-container">
           <h1>Detect an Obfuscated Code</h1>
         </header>
-  
+
         <div className="auth-form-container">
           <div className="file-upload-container">
             <h2>Upload file</h2>
@@ -62,30 +89,47 @@ function HomePage({ onLogout }) {
               className="form-control"
             />
           </div>
-  
+
+          <div className="model-select-container">
+            <h2>Select Model</h2>
+            <select value={model} onChange={handleModelChange} className="form-control">
+              <option value="default">Default Model</option>
+              <option value="model1">Model 1</option>
+              <option value="model2">Model 2</option>
+              <option value="model3">Model 3</option>
+              {/* Add more models as needed */}
+            </select>
+          </div>
+
           <div className="run-model-container">
             <button
-              onClick={handleRunModel}
+              onClick={() => handleRunModel(model)}
               className="btn btn-primary btn-block"
             >
               Run the ML Model with the given file
             </button>
           </div>
-  
+
           {result && (
             <div className="result-container">
               <h2>Upload Result</h2>
-              <pre style={{ whiteSpace: 'pre-wrap' }}>{result}</pre>
+              <pre style={{ whiteSpace: "pre-wrap" }}>{result}</pre>
             </div>
           )}
         </div>
-  
+
         <footer className="footer-container">
+          <button onClick={handleLogout} className="btn btn-secondary btn-block">
+            Logout
+          </button>
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              navigate(`/MalCheck?email=${email}`);
+              onFormSwitch("MalCheck", email);
+            }}
             className="btn btn-secondary btn-block"
           >
-            Logout
+            Malicious Check
           </button>
         </footer>
       </div>
