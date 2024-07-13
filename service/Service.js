@@ -4,7 +4,51 @@ const userController = require("./userControler")
 const filesController = require("./filesControler")
 
 
-async function upLoadFile(email, file) {
+async function upLoadFile(email, file, model="default") {
+    console.log("3");
+
+    /*if (!userController.isLogin(email)) {
+        throw new Error("Have to be logged in first");
+    }
+    console.log("3+");
+    // Add validation for email format, file name, etc.
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+        throw new Error("Invalid email format");
+    }
+    console.log("3++");
+    if (!file) {
+        throw new Error("File must have a exist");
+    }*/
+    
+    console.log("4");
+    console.log("file   ", typeof file);
+    console.log("model   ", model);
+    console.log("email   ", typeof email);
+    // Return a Promise that resolves or rejects based on the upload result
+    return new Promise((resolve, reject) => {
+        console.log('1 ')
+        filesController.upLoadFile(email, file, model, (result) => {
+            console.log('result', result)
+            // Add checks for the result here
+            if (result === null) {
+                console.log("File upload returned null result");
+                reject(new Error("File upload returned null result"));
+            } else if (result === '') {
+                console.log("File upload returned empty result");
+                reject(new Error("File upload returned empty result"));
+            } else if (typeof result !== 'string') {
+                console.log("File upload returned non-string result");
+                reject(new Error("File upload returned non-string result"));
+            } else {
+                console.log("5");
+                resolve(result);
+            }
+        });
+    });
+
+}
+
+async function upLoadFileForMalCheck(email, file) {
 
     if (!userController.isLogin(email)) {
         throw new Error("Have to be logged in first");
@@ -14,16 +58,13 @@ async function upLoadFile(email, file) {
     if (!email || typeof email !== 'string' || !email.includes('@')) {
         throw new Error("Invalid email format");
     }
-    if (!file || !file.name) {
-        throw new Error("File must have a name");
-    }
-    if (file.name === '') {
-        throw new Error("File name cannot be empty");
+    if (!file) {
+        throw new Error("File must have a exist");
     }
 
     // Return a Promise that resolves or rejects based on the upload result
     return new Promise((resolve, reject) => {
-        filesController.upLoadFile(email, file, (result) => {
+        filesController.upLoadFileForMalCheck(email, file, (result) => {
             // Add checks for the result here
             if (result === null) {
                 reject(new Error("File upload returned null result"));
@@ -59,5 +100,6 @@ module.exports = {
   upLoadFile,
   register,
   login,
-  logout
+  logout,
+  upLoadFileForMalCheck
 };
