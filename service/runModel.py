@@ -3,6 +3,11 @@ import sys
 import numpy as np
 import logging
 from tensorflow.keras.models import load_model
+import tensorflow as tf
+
+# Disable TensorFlow logging
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+tf.get_logger().setLevel('ERROR')
 
 # Logging configuration, DO NOT REMOVE
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -29,16 +34,16 @@ model_paths = {
 is_obfuscated_models = {"default", "model1"}
 which_obfuscator_models = {"model2", "model3"}
 
-print("Starting model prediction script")
+logging.info("Starting model prediction script")
 
 # Parse command-line arguments to get the selected model
 selected_model = sys.argv[1] if len(sys.argv) > 1 else "default"
 
-print(f"Selected model: {selected_model}")
+logging.info(f"Selected model: {selected_model}")
 
 # Load the corresponding saved model based on the selected model
 model_path = model_paths.get(selected_model, model_paths["default"])
-print(f"Loading model from: {model_path}")
+logging.info(f"Loading model from: {model_path}")
 
 # Load the saved model
 saved_model = load_model(model_path)
@@ -51,7 +56,7 @@ try:
         raise FileNotFoundError("No files found in the uploads directory.")
     file_name = dir_files[-1]
     new_file_path = os.path.join(dir_path, file_name)
-    print(f"Loading file for prediction: {new_file_path}")
+    logging.info(f"Loading file for prediction: {new_file_path}")
 except Exception as e:
     logging.error(f"Error accessing uploads directory: {e}")
     sys.exit(1)
@@ -63,13 +68,13 @@ for chunk in chunks:
     X.append(reshaped_chunk)
 
 X = np.array(X)
-print(f"Shape of X: {X.shape}")
+logging.info(f"Shape of X: {X.shape}")
 
 # Interpret the prediction
 if selected_model in is_obfuscated_models:
     predictions = []
     for chunk in X:
-        prediction = saved_model.predict(np.expand_dims(chunk, axis=0))
+        prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
         predictions.append(prediction)
     
     # Convert list of predictions to numpy array
@@ -88,10 +93,10 @@ if selected_model in is_obfuscated_models:
         final_confidence = mean_class_1
 
     # Print the prediction results
-    print(f"Mean for Class 0: {mean_class_0}")
-    print(f"Mean for Class 1: {mean_class_1}")
-    print(f"Final Prediction: Class {final_prediction}")
-    print(f"Confidence Level: {final_confidence}")
+    logging.info(f"Mean for Class 0: {mean_class_0}")
+    logging.info(f"Mean for Class 1: {mean_class_1}")
+    logging.info(f"Final Prediction: Class {final_prediction}")
+    logging.info(f"Confidence Level: {final_confidence}")
 
     # Generate the final report
     if final_prediction == 0:
@@ -142,7 +147,7 @@ elif selected_model in which_obfuscator_models:
     predictions = []
     confidence_levels = []
     for chunk in X:
-        prediction = saved_model.predict(np.expand_dims(chunk, axis=0))
+        prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
         predictions.append(np.argmax(prediction, axis=1)[0])
         confidence_levels.append(prediction[0][np.argmax(prediction, axis=1)[0]])
     
@@ -179,5 +184,5 @@ elif selected_model in which_obfuscator_models:
     
     Thank you for using our Obfuscation Detection Service.''')
 else:
-    print("Invalid model selected. Please choose a valid model for prediction.")
+    logging.error("Invalid model selected. Please choose a valid model for prediction.")
     sys.exit(1)
