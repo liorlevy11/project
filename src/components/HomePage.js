@@ -56,6 +56,7 @@ function HomePage({ onLogout, onFormSwitch }) {
           body: formData,
         });
         console.log("2");
+        const data = await response.json();
         // Print the response message to the console
       console.log(response);
 
@@ -63,7 +64,7 @@ function HomePage({ onLogout, onFormSwitch }) {
           setResult("The file upload returned null result");
         }
         else{
-        setResult(response.data);
+          setResult(data.message);
         }
       } catch (error) {
         console.error("Error uploading file:", error);

@@ -41,7 +41,7 @@ function MalCheck({ onLogout, onFormSwitch }) {
           body: formData,
         });
         const data = await response.json();
-        setResult(data.message);
+        //setResult(data.message);
         if (!response.ok) {
           setResult("The file upload returned null result");
         } else {

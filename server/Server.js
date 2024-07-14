@@ -56,7 +56,6 @@ app.post("/upLoadFile", upload.single('file'), async (req, res) => {
   try {
     // Process the file, email, and selected model
     let result = await service.upLoadFile(email, file.path, model);
-    res.statusMessage = result;
     res.status(200).json({message: result});
   } catch (error) {
     res.status(500).json({message: error.message });
