@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import logging
+import glob
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 
@@ -54,8 +55,10 @@ try:
     dir_files = os.listdir(dir_path)
     if not dir_files:
         raise FileNotFoundError("No files found in the uploads directory.")
-    file_name = dir_files[-1]
-    new_file_path = os.path.join(dir_path, file_name)
+    list_of_files = glob.glob('../server/uploads/*') 
+    new_file_path = max(list_of_files, key = os.path.getctime)
+    #file_name = dir_files[-1]
+    #new_file_path = os.path.join(dir_path, file_name)
     logging.info(f"Loading file for prediction: {new_file_path}")
 except Exception as e:
     logging.error(f"Error accessing uploads directory: {e}")
@@ -70,10 +73,11 @@ for chunk in chunks:
 X = np.array(X)
 logging.info(f"Shape of X: {X.shape}")
 
+
 # Interpret the prediction
 if selected_model in is_obfuscated_models:
     predictions = []
-    for chunk in X:
+    for chunk in X[]:
         prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
         predictions.append(prediction)
     
@@ -105,7 +109,7 @@ if selected_model in is_obfuscated_models:
         Thank you for submitting your file for our obfuscation detection analysis. We have completed the examination of your code, and here are the results:
         
         Detection Summary:
-        - File name : {file_name}
+        - File name : {new_file_path}
         - Obfuscated Code Detected: No
         - Confidence Level: {1 - final_confidence}
         
@@ -127,7 +131,7 @@ if selected_model in is_obfuscated_models:
         Thank you for submitting your file for our obfuscation detection analysis. We have completed the examination of your code, and here are the results:
         
         Detection Summary:
-        - File name : {file_name}
+        - File name : {new_file_path}
         - Obfuscated Code Detected: Yes
         - Confidence Level: {final_confidence}
         
@@ -146,7 +150,7 @@ if selected_model in is_obfuscated_models:
 elif selected_model in which_obfuscator_models:
     predictions = []
     confidence_levels = []
-    for chunk in X:
+    for chunk in X[]:
         prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
         predictions.append(np.argmax(prediction, axis=1)[0])
         confidence_levels.append(prediction[0][np.argmax(prediction, axis=1)[0]])
@@ -170,7 +174,7 @@ elif selected_model in which_obfuscator_models:
     Thank you for submitting your file for our obfuscation detection analysis. We have completed the examination of your code, and here are the results:
     
     Detection Summary:
-    - File name : {file_name}
+    - File name : {new_file_path}
     - Obfuscated Code Detected: {obfuscation_status}
     - Confidence Level: {confidence_level}
     
