@@ -77,7 +77,7 @@ logging.info(f"Shape of X: {X.shape}")
 # Interpret the prediction
 if selected_model in is_obfuscated_models:
     predictions = []
-    for chunk in X[]:
+    for chunk in X:
         prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
         predictions.append(prediction)
     
@@ -150,7 +150,7 @@ if selected_model in is_obfuscated_models:
 elif selected_model in which_obfuscator_models:
     predictions = []
     confidence_levels = []
-    for chunk in X[]:
+    for chunk in X:
         prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
         predictions.append(np.argmax(prediction, axis=1)[0])
         confidence_levels.append(prediction[0][np.argmax(prediction, axis=1)[0]])
