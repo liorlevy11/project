@@ -57,8 +57,6 @@ try:
         raise FileNotFoundError("No files found in the uploads directory.")
     list_of_files = glob.glob('../server/uploads/*') 
     new_file_path = max(list_of_files, key = os.path.getctime)
-    #file_name = dir_files[-1]
-    #new_file_path = os.path.join(dir_path, file_name)
     logging.info(f"Loading file for prediction: {new_file_path}")
 except Exception as e:
     logging.error(f"Error accessing uploads directory: {e}")
@@ -73,14 +71,20 @@ for chunk in chunks:
 X = np.array(X)
 logging.info(f"Shape of X: {X.shape}")
 
+# Randomly select 10% of the chunks
+num_chunks = len(X)
+num_random_chunks = max(1, int(0.1 * num_chunks))
+random_indices = np.random.choice(num_chunks, num_random_chunks, replace=False)
+X_random = X[random_indices]
+
+logging.info(f"Selected {num_random_chunks} random chunks for prediction")
 
 # Interpret the prediction
 if selected_model in is_obfuscated_models:
     predictions = []
-    for chunk in X:
+    for chunk in X_random:
         prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
         predictions.append(prediction)
-    
     # Convert list of predictions to numpy array
     predictions_array = np.array([pred[0] for pred in predictions])
     
@@ -150,7 +154,7 @@ if selected_model in is_obfuscated_models:
 elif selected_model in which_obfuscator_models:
     predictions = []
     confidence_levels = []
-    for chunk in X:
+    for chunk in X_random:
         prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
         predictions.append(np.argmax(prediction, axis=1)[0])
         confidence_levels.append(prediction[0][np.argmax(prediction, axis=1)[0]])
