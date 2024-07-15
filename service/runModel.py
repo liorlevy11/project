@@ -4,6 +4,7 @@ import numpy as np
 import logging
 import glob
 from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import TFSMLayer
 import tensorflow as tf
 
 # Disable TensorFlow logging
@@ -73,7 +74,7 @@ logging.info(f"Shape of X: {X.shape}")
 
 # Randomly select 10% of the chunks
 num_chunks = len(X)
-num_random_chunks = max(1, int(0.1 * num_chunks))
+num_random_chunks = max(1, int(0.5 * num_chunks))
 random_indices = np.random.choice(num_chunks, num_random_chunks, replace=False)
 X_random = X[random_indices]
 
@@ -93,12 +94,18 @@ if selected_model in is_obfuscated_models:
     mean_class_1 = np.mean(predictions_array[:, 1])
     
     # Determine the final prediction based on the larger mean
-    if mean_class_0 > mean_class_1:
-        final_prediction = 0
-        final_confidence = mean_class_0
-    else:
+    # if mean_class_0 > mean_class_1:
+    #     final_prediction = 0
+    #     final_confidence = mean_class_0
+    # else:
+    #     final_prediction = 1
+    #     final_confidence = mean_class_1
+    if mean_class_1 > 0:
         final_prediction = 1
         final_confidence = mean_class_1
+    else:
+        final_prediction = 0
+        final_confidence = mean_class_0
 
     # Print the prediction results
     logging.info(f"Mean for Class 0: {mean_class_0}")
@@ -115,7 +122,7 @@ if selected_model in is_obfuscated_models:
         Detection Summary:
         - File name : {new_file_path}
         - Obfuscated Code Detected: No
-        - Confidence Level: {1 - final_confidence}
+        - Confidence Level: {final_confidence}
         
         
         Details:
@@ -137,7 +144,7 @@ if selected_model in is_obfuscated_models:
         Detection Summary:
         - File name : {new_file_path}
         - Obfuscated Code Detected: Yes
-        - Confidence Level: {final_confidence}
+        - Confidence Level: {1-final_confidence}
         
         
         Details:
@@ -156,12 +163,27 @@ elif selected_model in which_obfuscator_models:
     confidence_levels = []
     for chunk in X_random:
         prediction = saved_model.predict(np.expand_dims(chunk, axis=0), verbose=0)
-        predictions.append(np.argmax(prediction, axis=1)[0])
-        confidence_levels.append(prediction[0][np.argmax(prediction, axis=1)[0]])
-    
+        if prediction[0][1] > 0 or prediction[0][2]>0: 
+            if prediction[0][1] > prediction[0][2]>0:
+                predictions.append(1)
+                confidence_levels.append(prediction[0][1])
+            else:
+                predictions.append(2)
+                confidence_levels.append(prediction[0][2])
+        else:
+                predictions.append(0)
+                confidence_levels.append(prediction[0][0])
+
     # Compute the most frequent predicted class
-    predicted_class = np.bincount(predictions).argmax()
-    confidence_level = np.mean(confidence_levels)
+    # predicted_class = np.bincount(predictions).argmax()
+    # confidence_level = np.max(confidence_levels)
+    predictions = np.array(predictions)
+    filtered_predictions = predictions[predictions != 0]
+    logging.info(filtered_predictions)
+    if len(filtered_predictions)>0:
+        predicted_class = np.bincount(filtered_predictions).argmax()
+    else:
+        predicted_class = 0
     
     if predicted_class == 0:
         obfuscation_status = "No"
@@ -180,7 +202,7 @@ elif selected_model in which_obfuscator_models:
     Detection Summary:
     - File name : {new_file_path}
     - Obfuscated Code Detected: {obfuscation_status}
-    - Confidence Level: {confidence_level}
+    
     
     
     Details:
