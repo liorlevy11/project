@@ -48,11 +48,8 @@ app.post("/upLoadFile", upload.single('file'), async (req, res) => {
   console.log("test Received file upload request:", req.body); // Added this line for debugging
 
   const email = req.body.email;
-  console.log("here-------------", email);
   const file = req.file; // The uploaded file's information
-  console.log("here------------- file ",file);
   const model = req.body.model; // The selected model
-  console.log("here-------------");
   try {
     // Process the file, email, and selected model
     let result = await service.upLoadFile(email, file.path, model);
